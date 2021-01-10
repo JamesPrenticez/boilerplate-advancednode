@@ -47,7 +47,7 @@ myDB(async (client) => {
   //Profile Route
   //Call ensureAuthenticated middleware on the profile route
   app.route('/profile').get(ensureAuthenticated, (req, res) => {
-    res.render(process.cwd() + '/views/pug/profile');
+    res.render(process.cwd() + '/views/pug/profile', { username: req.user.username });
   });
 
   // Serialization and deserialization
