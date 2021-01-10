@@ -50,6 +50,22 @@ myDB(async (client) => {
     res.render(process.cwd() + '/views/pug/profile', { username: req.user.username });
   });
 
+  //Logout Route
+  //Redirects to homepage
+  app.route('/logout')
+  .get((req, res) => {
+    //In passport, unauthenticating a user is as easy as just calling req.logout(); before redirecting.
+    req.logout();
+    res.redirect('/');
+  });
+
+  //404 Not Found Handler
+  app.use((req, res, next) => {
+  res.status(404)
+    .type('text')
+    .send('Not Found');
+  });
+
   // Serialization and deserialization
   passport.serializeUser((user, done) => {
     done(null, user._id);
