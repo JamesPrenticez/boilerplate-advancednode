@@ -29,16 +29,27 @@ app.use(passport.session());
 myDB(async (client) => {
   const myDataBase = await client.db('database').collection('users');
 
-  // Be sure to change the title
+  // Main Route
   app.route('/').get((req, res) => {
     // Change the response to render the Pug template
     res.render('pug', {
       title: 'Connected to Database',
-      message: 'Please login'
+      message: 'Please login',
+      showLogin: true
     });
   });
 
-  // Serialization and deserialization here...
+  //Login Route - redirects to slash on fail and profile when success
+  app.route('/login').post(passport.authenticate('local', { failureRedirect: '/' }), (req, res) => {
+    res.redirect('/profile');
+  });
+
+  //Profile Route
+  app.route('/profile').get((req, res) => {
+    res.render(process.cwd() + '/views/pug/profile');
+  });
+
+  // Serialization and deserialization
   passport.serializeUser((user, done) => {
     done(null, user._id);
   });
