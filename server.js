@@ -45,7 +45,8 @@ myDB(async (client) => {
   });
 
   //Profile Route
-  app.route('/profile').get((req, res) => {
+  //Call ensureAuthenticated middleware on the profile route
+  app.route('/profile').get(ensureAuthenticated, (req, res) => {
     res.render(process.cwd() + '/views/pug/profile');
   });
 
@@ -69,14 +70,22 @@ myDB(async (client) => {
       });
     }
   ));
-  // Be sure to add this...
+  // Catch Errors
 }).catch((e) => {
   app.route('/').get((req, res) => {
     res.render('pug', { title: e, message: 'Unable to login' });
   });
 });
-// app.listen out here...
 
+//Middleware to ensureAthenticated
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/');
+}
+
+// App.listen
 app.listen(process.env.PORT || 3000, () => {
   console.log('Listening on port ' + process.env.PORT);
 });
