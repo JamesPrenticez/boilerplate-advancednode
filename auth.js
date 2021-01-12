@@ -1,4 +1,5 @@
 const passport = require('passport');
+const GitHubStrategy = require('passport-github').Strategy
 const LocalStrategy = require('passport-local');
 const bcrypt = require('bcrypt');
 const ObjectID = require('mongodb').ObjectID;
@@ -26,6 +27,18 @@ module.exports = function (app, myDataBase) {
         }
         return done(null, user);
       });
+    }
+  ));
+
+  //Github authentication stratergy - This won't work on the local host you must run it on a live server
+  passport.use(new GitHubStrategy({
+    clientID: process.env.GITHUB_CLIENT_ID,
+    clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    callbackURL: 'https://advancednode-jamesprenticez.herokuapp.com/auth/github/callback'
+  },
+    function (accessToken, refreshToken, profile, cb) {
+      console.log(profile);
+      // Database logic here with callback containing our user object
     }
   ));
 }

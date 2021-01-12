@@ -63,7 +63,7 @@ module.exports = function (app, myDataBase) {
       }
     );
 
-  //Git Hub Authentication Stratergy - This won't work on the local host you must run it on a live server
+  //Git Hub Authentication Route 
   app.route('/auth/github').get(passport.authenticate('github'));
   app.route('/auth/github/callback').get(passport.authenticate('github', { failureRedirect: '/' }), (req, res) => {
     res.redirect('/profile');
