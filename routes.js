@@ -9,7 +9,8 @@ module.exports = function (app, myDataBase) {
       title: 'Connected to Database',
       message: 'Please login',
       showLogin: true,
-      showRegistration: true
+      showRegistration: true,
+      showSocialAuth: true
     });
   });
 
@@ -61,6 +62,12 @@ module.exports = function (app, myDataBase) {
         res.redirect('/profile');
       }
     );
+
+  //Git Hub Authentication Stratergy - This won't work on the local host you must run it on a live server
+  app.route('/auth/github').get(passport.authenticate('github'));
+  app.route('/auth/github/callback').get(passport.authenticate('github', { failureRedirect: '/' }), (req, res) => {
+    res.redirect('/profile');
+  });
 
   //404 Not Found Handler
   app.use((req, res, next) => {
