@@ -3,6 +3,11 @@ $(document).ready(function () {
   let socket = io();
   /* Note:io() works only when connecting to a socket hosted on the same url/server. For connecting to an external socket hosted elsewhere, you would use io.connect('URL');.*/
 
+  //Listen for the user count event
+  socket.on('user count', function (data) {
+    console.log(data);
+  });
+
   // Form submittion with new message in field with id 'm'
   $('form').submit(function () {
     var messageToSend = $('#m').val();
