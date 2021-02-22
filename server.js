@@ -52,6 +52,7 @@ myDB(async (client) => {
     --currentUsers;
     io.emit('user count', currentUsers);
   });
+});
 
   // Catch Errors
 }).catch((e) => {
