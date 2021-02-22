@@ -25,6 +25,11 @@ module.exports = function (app, myDataBase) {
     res.render(process.cwd() + '/views/pug/profile', { username: req.user.username });
   });
 
+  //Chat Route
+  app.route('/chat').get(ensureAuthenticated, (req, res) => {
+    res.render('/views/pug/chat', { user: req.user });
+  });
+
   //Logout Route
   //Redirects to homepage
   app.route('/logout')
@@ -66,7 +71,8 @@ module.exports = function (app, myDataBase) {
   //Git Hub Authentication Route 
   app.route('/auth/github').get(passport.authenticate('github'));
   app.route('/auth/github/callback').get(passport.authenticate('github', { failureRedirect: '/' }), (req, res) => {
-    res.redirect('/profile');
+    req.session.user_id = req.user.id;
+    res.redirect('/chat');
   });
 
   //404 Not Found Handler

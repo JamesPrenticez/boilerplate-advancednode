@@ -10,6 +10,9 @@ const routes = require('./routes')
 const auth = require('./auth')
 
 const app = express();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
+
 app.set('view engine', 'pug')
 
 fccTesting(app); //For FCC testing purposes
@@ -27,12 +30,18 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Database connection
 myDB(async (client) => {
   const myDataBase = await client.db('database').collection('users');
 
   // Right after you establish a successful connection with the database, instantiate routes and auth like so:
   routes(app, myDataBase);
   auth(app, myDataBase);
+
+  // Socket io listen with "on" inside out DB connection
+  io.on('connection', (socket) => {
+    console.log('A user has connected');
+  });
 
   // Catch Errors
 }).catch((e) => {
@@ -41,7 +50,7 @@ myDB(async (client) => {
   });
 });
 
-// App.listen
-app.listen(process.env.PORT || 3000, () => {
+// App.listen -> HTTP.listen
+http.listen(process.env.PORT || 3000, () => {
   console.log('Listening on port ' + process.env.PORT);
 });
