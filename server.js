@@ -38,12 +38,19 @@ myDB(async (client) => {
   routes(app, myDataBase);
   auth(app, myDataBase);
 
-  // Socket io listen with "on" inside out DB connection
+  // Socket io listen with "on" inside our DB connection
+  
   let currentUsers = 0
+  //Handel a user connecting
   io.on('connection', (socket) => {
     ++currentUsers
     io.emit('user count', currentUsers)
     console.log('A user has connected');
+  //Handel a user disconnecting
+  socket.on('disconnect', () => {
+    console.log('A user has disconnected');
+    --currentUsers;
+    io.emit('user count', currentUsers);
   });
 
   // Catch Errors
