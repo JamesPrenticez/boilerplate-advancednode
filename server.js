@@ -5,9 +5,8 @@ const myDB = require('./connection');
 const fccTesting = require('./freeCodeCamp/fcctesting.js');
 const session = require('express-session');
 const passport = require('passport');
-
-const routes = require('./routes')
-const auth = require('./auth')
+const routes = require('./routes');
+const auth = require('./auth.js');
 
 const app = express();
 const http = require('http').createServer(app);
@@ -18,14 +17,13 @@ const MongoStore = require('connect-mongo')(session);
 const URI = process.env.MONGO_URI;
 const store = new MongoStore({ url: URI });
 
-app.set('view engine', 'pug')
+app.set('view engine', 'pug');
 
 fccTesting(app); //For FCC testing purposes
 app.use('/public', express.static(process.cwd() + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Session middleware
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: true,
@@ -38,7 +36,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Determine who is actually connected to the server with socket.io
 io.use(
   passportSocketIo.authorize({
     cookieParser: cookieParser,
@@ -50,31 +47,24 @@ io.use(
   })
 );
 
-// Database connection
 myDB(async (client) => {
   const myDataBase = await client.db('database').collection('users');
 
-  // Right after you establish a successful connection with the database, instantiate routes and auth like so:
   routes(app, myDataBase);
   auth(app, myDataBase);
 
-  // Socket io listen with "on" inside our DB connection
-  
-  let currentUsers = 0
-  //Handel a user connecting
+  let currentUsers = 0;
   io.on('connection', (socket) => {
-    ++currentUsers
-    io.emit('user count', currentUsers)
-    console.log('A user has connected');
-  //Handel a user disconnecting
-  socket.on('disconnect', () => {
-    console.log('A user has disconnected');
-    --currentUsers;
+    ++currentUsers;
     io.emit('user count', currentUsers);
-  });
-});
+    console.log('user ' + socket.request.user.username + ' connected');
 
-  // Catch Errors
+    socket.on('disconnect', () => {
+      console.log('A user has disconnected');
+      --currentUsers;
+      io.emit('user count', currentUsers);
+    });
+  });
 }).catch((e) => {
   app.route('/').get((req, res) => {
     res.render('pug', { title: e, message: 'Unable to login' });
@@ -83,7 +73,7 @@ myDB(async (client) => {
 
 function onAuthorizeSuccess(data, accept) {
   console.log('successful connection to socket.io');
-  console.log('user ' + socket.request.user.name + ' connected');
+
   accept(null, true);
 }
 
@@ -93,7 +83,6 @@ function onAuthorizeFail(data, message, error, accept) {
   accept(null, false);
 }
 
-// App.listen -> HTTP.listen
 http.listen(process.env.PORT || 3000, () => {
   console.log('Listening on port ' + process.env.PORT);
 });
