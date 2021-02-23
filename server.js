@@ -69,29 +69,30 @@ myDB(async (client) => {
       currentUsers,
       connected: true
     })
+    socket.on('chat message', (message) => {
+      io.emit('chat message', { name: socket.request.user.name, message });
+    });
+    console.log('A user has connected');
     //Handel a user disconnecting
     socket.on('disconnect', () => {
       console.log('A user has disconnected');
       --currentUsers;
-      io.emit('user count', currentUsers);
+      io.emit('user', {
+        name: socket.request.user.name,
+        currentUsers,
+        connected: false
+      });
     });
   });
-
-  // Catch Errors
+// Catch Errors
 }).catch((e) => {
   app.route('/').get((req, res) => {
     res.render('pug', { title: e, message: 'Unable to login' });
   });
 });
 
-// App.listen -> HTTP.listen
-http.listen(process.env.PORT || 3000, () => {
-  console.log('Listening on port ' + process.env.PORT);
-});
-
 function onAuthorizeSuccess(data, accept) {
   console.log('successful connection to socket.io');
-
   accept(null, true);
 }
 
@@ -100,3 +101,8 @@ function onAuthorizeFail(data, message, error, accept) {
   console.log('failed connection to socket.io:', message);
   accept(null, false);
 }
+
+// App.listen -> HTTP.listen
+http.listen(process.env.PORT || 3000, () => {
+  console.log('Listening on port ' + process.env.PORT);
+});

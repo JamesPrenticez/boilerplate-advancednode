@@ -18,3 +18,6 @@ https://stackoverflow.com/questions/58082890/how-to-load-mongodb-uri-from-env-fi
 https://stackoverflow.com/questions/56777088/unable-to-connect-to-mongodb-database-with-my-heroku-app
 $ heroku logs -a advancednode-jamesprenticez
 $ heroku config:set MONGO_URI="mongodb+srv://JamesPrenticez:<!PASSWORD!>@ffc-passport.efd9z.mongodb.net/<!DBNAME!>?retryWrites=true&w=majority" -a advancednode-jamesprenticez 
+
+### But where is the React??
+https://forum.freecodecamp.org/t/advanced-node-and-express-but-with-react/446391
