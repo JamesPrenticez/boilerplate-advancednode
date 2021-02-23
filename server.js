@@ -20,7 +20,8 @@ const store = new MongoStore({ url: URI });
 
 app.set('view engine', 'pug')
 
-fccTesting(app); //For FCC testing purposes
+//For FCC testing purposes
+fccTesting(app);
 app.use('/public', express.static(process.cwd() + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -57,20 +58,24 @@ myDB(async (client) => {
   auth(app, myDataBase);
 
   // Socket io listen with "on" inside our DB connection
-  
   let currentUsers = 0
-  //Handel a user connecting
+
+  //Listen for connectiong
   io.on('connection', (socket) => {
     ++currentUsers
-    io.emit('user count', currentUsers)
-    console.log('A user has connected');
-  //Handel a user disconnecting
-  socket.on('disconnect', () => {
-    console.log('A user has disconnected');
-    --currentUsers;
-    io.emit('user count', currentUsers);
+    //Handel a user connecting
+    io.emit('user', {
+      name: socket.request.user.name,
+      currentUsers,
+      connected: true
+    })
+    //Handel a user disconnecting
+    socket.on('disconnect', () => {
+      console.log('A user has disconnected');
+      --currentUsers;
+      io.emit('user count', currentUsers);
+    });
   });
-});
 
   // Catch Errors
 }).catch((e) => {
